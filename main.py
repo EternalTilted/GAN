@@ -29,30 +29,13 @@ x_train = image_dataset_from_directory(
     interpolation='bicubic',
 )
 
-x_val = image_dataset_from_directory(
-    'data/test_256x256/',
-    labels=None,
-    color_mode='rgb',
-    batch_size=BATCH_SIZE,
-    image_size=(256, 256),
-    shuffle=True,
-    interpolation='bicubic',
-)
-
 AUTOTUNE = tf.data.AUTOTUNE
 
 normalization_layer = tf.keras.layers.Rescaling(1./255)
 x_train = x_train.map(lambda x: (normalization_layer(x)))
 x_train = x_train.prefetch(buffer_size=AUTOTUNE)
-x_val = x_val.prefetch(buffer_size=AUTOTUNE)
 
 hidden_dim = 8 * 8 * 256
-
-def noiser(args):
-    global z_mean, z_log_var
-    z_mean, z_log_var = args
-    N = K.random_normal(shape=(BATCH_SIZE, hidden_dim), mean=0., stddev=1.0)
-    return K.exp(z_log_var / 2) * N + z_mean
 
 
 # формирование сетей
@@ -64,9 +47,6 @@ generator = tf.keras.Sequential([
 
     Conv2DTranspose(256, (3, 3), strides=(2, 2), padding='same', activation='relu'),
     BatchNormalization(),
-
-    #Conv2DTranspose(256, (3, 3), strides=(2, 2), padding='same', activation='relu'),
-    #BatchNormalization(),
 
     Conv2DTranspose(128, (3, 3), strides=(2, 2), padding='same', activation='relu'),
     BatchNormalization(),
@@ -85,10 +65,6 @@ generator.summary()
 # дискриминатор
 
 discriminator = tf.keras.Sequential([
-    #Conv2D(3, (3,3), strides=(2,2), padding='same', input_shape=[256, 256, 3]),
-   # LeakyReLU(),
-    #Dropout(0.3),
-
     Conv2D(32, (3, 3), strides=(2, 2), padding='same', input_shape=[256, 256, 3]),
     LeakyReLU(),
     Dropout(0.3),
