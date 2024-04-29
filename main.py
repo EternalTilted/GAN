@@ -222,8 +222,8 @@ def test_generator():
         if i >= 50: break
 
 
-discriminator.load_weights('./training_checkpoints/discriminator_checkpoint_epoch_50.h5')
-generator.load_weights('./training_checkpoints/generator_checkpoint_epoch_50.h5')
+discriminator.load_weights('./training_checkpoints/discriminator_last_checkpoint.h5')
+generator.load_weights('./training_checkpoints/generator_last_checkpoint.h5')
 
 history = load_history()
 
